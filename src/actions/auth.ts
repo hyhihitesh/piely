@@ -1,0 +1,60 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+
+export async function signOutAction() {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    redirect("/");
+}
+
+export async function login(prevState: unknown, formData: FormData) {
+    const supabase = await createClient();
+    const data = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+    };
+    const { error } = await supabase.auth.signInWithPassword(data);
+    if (error) {
+        // In a real app we'd adhere to progressive enhancement better or return state
+        // For this pattern we rely on the client refreshing or checking search params
+        throw error;
+    }
+    redirect("/dashboard");
+}
+
+export async function signup(prevState: unknown, formData: FormData) {
+    const supabase = await createClient();
+    const data = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+    };
+    const { error } = await supabase.auth.signUp(data);
+    if (error) {
+        throw error;
+    }
+    redirect("/dashboard");
+}
+
+export async function loginWithOAuth(provider: "google", nextUrl?: string) {
+    const supabase = await createClient();
+    const redirectTo = nextUrl
+        ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(nextUrl)}`
+        : `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+            redirectTo,
+        },
+    });
+
+    if (error) {
+        throw error;
+    }
+
+    if (data.url) {
+        redirect(data.url);
+    }
+}
