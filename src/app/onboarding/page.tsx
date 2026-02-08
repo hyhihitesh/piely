@@ -86,22 +86,25 @@ export default function OnboardingPage() {
             }
         }
 
-        try {
-            const project = await createProject(idea || "Untitled", validStage, messagesToSend);
-            if (project?.id) {
-                // Successful creation! Clear state and move to project
-                localStorage.removeItem("piely_startup_stage");
-                localStorage.removeItem("piely_onboarding_messages"); // Clean up messages as they are now in DB
-                router.push(`/project/${project.id}`);
-            }
-        } catch (e: unknown) {
-            console.error("Project creation failed:", e);
+        // No try/catch needed as action is now safe
+        const result = await createProject(idea || "Untitled", validStage, messagesToSend);
 
-            const errorMessage = e instanceof Error ? e.message : '';
-            if (errorMessage.includes("Authentication required")) {
+        if (result.success && result.id) {
+            // Successful creation! Clear state and move to project
+            localStorage.removeItem("piely_startup_stage");
+            localStorage.removeItem("piely_onboarding_messages"); // Clean up messages as they are now in DB
+            router.push(`/project/${result.id}`);
+        } else {
+            console.error("Project creation failed:", result.error);
+
+            if (result.error?.includes("Authentication required")) {
                 // Rescue flow: User is not logged in.
                 // localStorage is already set, so we can redirect to auth
                 router.push("/auth?intent=onboarding_complete");
+            } else {
+                // Show error toast or alert here if we had one
+                alert(result.error || "Failed to create project. Please try again.");
+                setIsFinalizing(false); // Reset UI so they can try again
             }
         }
     };

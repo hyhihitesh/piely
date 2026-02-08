@@ -1,12 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { env } from "@/lib/env";
 
 export async function executeTool(toolId: string, nodeId: string, inputs: Record<string, unknown>) {
     const supabase = await createClient();
 
     if (toolId === "deploy_vercel") {
-        const vercelToken = process.env.VERCEL_TOKEN;
+        const vercelToken = env.VERCEL_TOKEN;
 
         if (!vercelToken) {
             return { success: false, message: "Server Error: VERCEL_TOKEN missing in environment variables." };

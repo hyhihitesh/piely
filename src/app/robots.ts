@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next";
+import { env } from "@/lib/env";
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://piely.app";
+    const baseUrl = env.NEXT_PUBLIC_APP_URL || "https://piely.app";
 
     return {
         rules: [

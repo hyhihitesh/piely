@@ -1,7 +1,8 @@
 import Exa from "exa-js";
+import { env } from "@/lib/env";
 
-const exaClient = process.env.EXA_API_KEY
-  ? new Exa(process.env.EXA_API_KEY)
+const exaClient = env.EXA_API_KEY
+  ? new Exa(env.EXA_API_KEY)
   : null;
 
 export interface ResearchInsights {

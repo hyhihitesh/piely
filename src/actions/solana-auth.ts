@@ -6,6 +6,7 @@ import bs58 from "bs58";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { env } from "@/lib/env";
 
 interface VerifySolanaParams {
     publicKey: string;
@@ -36,9 +37,10 @@ export async function verifySolanaLogin({ publicKey, signature, message }: Verif
         const supabase = await createClient(); // Context-aware client (sets cookies)
 
         // Admin client for privileged operations (bypassing email confirmation)
+        // Service Role Key is required here - checked by Zod schema
         const supabaseAdmin = createAdminClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
+            env.NEXT_PUBLIC_SUPABASE_URL,
+            env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
         const email = `${publicKey}@solana.piely.app`;

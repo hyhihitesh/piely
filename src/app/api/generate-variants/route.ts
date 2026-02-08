@@ -2,25 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { roadmapResponseSchema } from "@/lib/roadmapSchema";
+import { env } from "@/lib/env";
 
 export const maxDuration = 60;
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
+    if (!env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "OpenAI API key not configured" },
+        { status: 500 },
+      );
+    }
+
+    const body = await req.json();
     const { idea, currentRoadmap, variantType } = body;
 
     if (!idea || typeof idea !== "string") {
       return NextResponse.json(
         { error: "Missing or invalid 'idea' field" },
         { status: 400 },
-      );
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "OpenAI API key not configured" },
-        { status: 500 },
       );
     }
 

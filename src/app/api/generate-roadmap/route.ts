@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { env } from "@/lib/env";
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import {
@@ -43,7 +45,8 @@ export async function POST(request: NextRequest) {
       researchInsights = await researchStartupIdea(body.idea);
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    // ... inside function
+    if (!env.OPENAI_API_KEY) {
       const stubRoadmap = buildStubRoadmap(body.idea, focusStage, detailLevel);
       return NextResponse.json(roadmapResponseSchema.parse(stubRoadmap));
     }

@@ -17,9 +17,8 @@ export async function login(prevState: unknown, formData: FormData) {
     };
     const { error } = await supabase.auth.signInWithPassword(data);
     if (error) {
-        // In a real app we'd adhere to progressive enhancement better or return state
-        // For this pattern we rely on the client refreshing or checking search params
-        throw error;
+        // Return state for useActionState to display
+        return { error: error.message };
     }
     redirect("/dashboard");
 }
@@ -32,9 +31,10 @@ export async function signup(prevState: unknown, formData: FormData) {
     };
     const { error } = await supabase.auth.signUp(data);
     if (error) {
-        throw error;
+        return { error: error.message };
     }
-    redirect("/dashboard");
+    // Success but usually requires email confirmation
+    return { success: "Account created! Please check your email to confirm." };
 }
 
 export async function loginWithOAuth(provider: "google", nextUrl?: string) {

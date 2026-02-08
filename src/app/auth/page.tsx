@@ -21,9 +21,9 @@ function AuthPageContent() {
 
     // Server Actions Hooks - Disabling lint for unused state vars that are needed for form patterns
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_state, formAction, isPending] = useActionState(login, null);
+    const [state, formAction, isPending] = useActionState(login, null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_signupState, signupAction] = useActionState(signup, null);
+    const [signupState, signupAction] = useActionState(signup, null);
 
     const [mounted, setMounted] = useState(false);
 
@@ -272,16 +272,22 @@ function AuthPageContent() {
                                     )}
                                 </button>
                             </div>
-                            {/* State handling temporarily disabled - actions redirect on success */}
-                            {/* {state?.error && (
-                                <p className="text-red-500 text-sm text-center">{state.error}</p>
+                            {/* State handling enabled */}
+                            {state?.error && (
+                                <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                                    <p className="text-red-600 dark:text-red-400 text-sm text-center font-medium">{state.error}</p>
+                                </div>
                             )}
                             {signupState?.success && (
-                                <p className="text-green-500 text-sm text-center">{signupState.success}</p>
+                                <div className="p-3 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                                    <p className="text-green-600 dark:text-green-400 text-sm text-center font-medium">{signupState.success}</p>
+                                </div>
                             )}
                             {signupState?.error && (
-                                <p className="text-red-500 text-sm text-center">{signupState.error}</p>
-                            )} */}
+                                <div className="p-3 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                                    <p className="text-red-600 dark:text-red-400 text-sm text-center font-medium">{signupState.error}</p>
+                                </div>
+                            )}
                         </form>
                     </div>
 
