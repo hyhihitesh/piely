@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,11 +29,18 @@ export function NodeContextChat({ nodeId, nodeTitle, nodeDescription, projectId 
     const [historyLoaded, setHistoryLoaded] = useState(false);
     const [chatInput, setChatInput] = useState("");
 
-    // Use chat hook with id and body options only (ai-sdk v4 pattern)
+    // Use chat hook with DefaultChatTransport (AI SDK 5 pattern)
     const { messages, sendMessage, status } = useChat({
         id: `node-chat-${nodeId}`,
-        // Note: SDK v4 uses a different method for API routes
-        // The route is inferred or set via fetch options
+        transport: new DefaultChatTransport({
+            api: '/api/chat/node',
+            body: {
+                nodeId,
+                nodeTitle,
+                nodeDescription,
+                projectId,
+            },
+        }),
     });
 
     const isLoading = status === "streaming" || status === "submitted";
@@ -85,18 +93,8 @@ export function NodeContextChat({ nodeId, nodeTitle, nodeDescription, projectId 
         e.preventDefault();
         if (!chatInput.trim() || isLoading) return;
 
-        // Include context via options body
-        await sendMessage(
-            { parts: [{ type: "text", text: chatInput }] },
-            {
-                body: {
-                    nodeId,
-                    nodeTitle,
-                    nodeDescription,
-                    projectId
-                }
-            }
-        );
+        // Send message (body is already configured in transport)
+        await sendMessage({ parts: [{ type: "text", text: chatInput }] });
         setChatInput("");
     };
 
